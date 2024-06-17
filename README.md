@@ -74,6 +74,22 @@ wget -qO- --no-check-certificate https://raw.githubusercontent.com/oooldking/scr
 ```sh
 bash <(curl -sL https://raw.githubusercontent.com/i-abc/Speedtest/main/speedtest.sh)
 ```
+## 使用http下载文件
+```sh
+dd if=/dev/zero bs=1M count=2048 of=tt && python3 -m http.server 8000
+```
+## iperf3本地测试
+```sh
+apt install iperf3
+```
+服务端
+```sh
+iperf3 -s -p 8000
+```
+客户端
+```sh
+iperf3 -c xxx.xx.xx.xx -p 8000
+```
 # 超售测试脚本
 ## 一键检测超售 LOC帖
 ```sh
