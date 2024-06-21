@@ -139,6 +139,10 @@ chmod +x tcp.sh
 ```sh
 wget -O tcpx.sh "https://github.com/ylx2016/Linux-NetSpeed/raw/master/tcpx.sh" && chmod +x tcpx.sh && ./tcpx.sh
 ```
+# TCP窗口调优
+```sh
+wget http://sh.nekoneko.cloud/tools.sh && chmod +x tools.sh && ./tools.sh
+```
 # moerats大佬的添加swap脚本
 ```sh
 wget https://www.moerats.com/usr/shell/swap.sh && bash swap.sh
@@ -180,9 +184,75 @@ wget -N git.io/aria2.sh && chmod +x aria2.sh && bash aria2.sh
 ```sh
 bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install.sh)
 ```
+## 3X-UI
 ## Xray
 ```
 bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install
+```
+## Hysteria2
+```sh
+bash <(curl -fsSL https://get.hy2.sh/)
+systemctl enable hysteria-server
+```
+```sh
+openssl req -x509 -nodes -newkey ec:<(openssl ecparam -name prime256v1) -keyout /etc/hysteria/server.key -out /etc/hysteria/server.crt -subj "/CN=bing.com" -days 36500 && chown hysteria /etc/hysteria/server.key && chown hysteria /etc/hysteria/server.crt
+```
+```sh
+nano /etc/hysteria/config.yaml
+```
+```sh
+# auth段使用脚本生成的密码，其余部分删掉
+listen: :19999
+tls:
+  cert: /etc/hysteria/server.crt
+  key: /etc/hysteria/server.key
+quic:
+  initStreamReceiveWindow: 16777216
+  maxStreamReceiveWindow: 16777216
+  initConnReceiveWindow: 33554432
+  maxConnReceiveWindow: 33554432
+masquerade:
+  type: proxy
+  proxy:
+    url: https://bing.com
+    rewriteHost: true
+```
+```sh
+systemctl start hysteria-server
+```
+## 端口跳跃
+```sh
+apt install iptables-persistent
+```
+```sh
+iptables -t nat -A PREROUTING -i eth0 -p udp --dport 20000:40000 -j DNAT --to-destination :19999
+```
+```sh
+ip6tables -t nat -A PREROUTING -i eth0 -p udp --dport 20000:40000 -j DNAT --to-destination :19999
+```
+```sh
+netfilter-persistent save
+```
+## 相关命令
+```sh
+#一键安装Hysteria2
+bash <(curl -fsSL https://get.hy2.sh/)
+
+#生成自签证书
+openssl req -x509 -nodes -newkey ec:<(openssl ecparam -name prime256v1) -keyout /etc/hysteria/server.key -out /etc/hysteria/server.crt -subj "/CN=bing.com" -days 36500 && sudo chown hysteria /etc/hysteria/server.key && sudo chown hysteria /etc/hysteria/server.crt
+
+#启动Hysteria2
+systemctl start hysteria-server.service
+#重启Hysteria2
+systemctl restart hysteria-server.service
+#查看Hysteria2状态
+systemctl status hysteria-server.service
+#停止Hysteria2
+systemctl stop hysteria-server.service
+#设置开机自启
+systemctl enable hysteria-server.service
+#查看日志
+journalctl -u hysteria-server.service
 ```
 ## qbittorrent 4.3.9
 
